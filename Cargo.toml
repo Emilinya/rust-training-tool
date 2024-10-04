@@ -1,0 +1,20 @@
+[package]
+name = "rust-training-tool"
+version = "0.1.0"
+edition = "2021"
+authors = ["Emilie Dørum <emilid2103@gmail.com>"]
+description = "A very simple game engine using egui. Made for a rust training session, do not use!"
+license = "GPL-3.0"
+license-file = "LICENSE"
+repository = "https://github.com/emilinya"
+
+[lib]
+name = "rust_training_tool"
+path = "src/lib.rs"
+
+[[bin]]
+name = "test"
+path = "src/bin.rs"
+
+[dependencies]
+eframe = "0.29.1"
