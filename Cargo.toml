@@ -1,13 +1,19 @@
 [package]
 name = "rust-training-tool"
-version = "0.2.0"
+version = "0.3.0"
 edition = "2021"
 authors = ["Emilie Dørum <emilid2103@gmail.com>"]
 description = "A very simple game engine using egui. Made for a rust training session, do not use!"
-license = "GPL-3.0"
+license = "MIT"
 repository = "https://github.com/Emilinya/rust-training-tool"
 
 [lib]
 
 [dependencies]
 eframe = "0.29.1"
+egui_extras = { version = "0.29.1", features = ["image"], optional = true }
+image = { version = "0.25", optional = true }
+
+[features]
+default = []
+images = ["dep:egui_extras", "dep:image"]

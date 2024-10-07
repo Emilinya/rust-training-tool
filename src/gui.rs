@@ -8,8 +8,8 @@ use std::{
 
 /// The main function where your game logic is ran each frame.
 /// Takes in a `Context`.
-pub trait MainFunction: FnMut(Context) {}
-impl<T: FnMut(Context)> MainFunction for T {}
+pub trait MainFunction: FnMut(Context, &mut egui::Ui) {}
+impl<T: FnMut(Context, &mut egui::Ui)> MainFunction for T {}
 
 /// The frame context the main logic is called with. Contains
 /// everything you need to update entities and render a frame.
@@ -55,28 +55,36 @@ impl<F: MainFunction> Gui<F> {
 ///         .with_inner_size([480.0, 360.0]),
 ///     ..Default::default()
 /// };
-/// run(options, |ctx| {
+/// run(options, "test", |ctx, _ui| {
 ///     ctx.painter.circle_filled(
 ///         ctx.drawable_area.center(),
 ///         ctx.drawable_area.width() * 0.1,
 ///         egui::Color32::ORANGE,
 ///     );
 /// })
-/// .expect("Can't start game!");
+/// .expect("Gui should run");
 /// ```
-pub fn run<F>(options: eframe::NativeOptions, main_function: F) -> eframe::Result
+pub fn run<F>(options: eframe::NativeOptions, app_name: &str, main_function: F) -> eframe::Result
 where
     F: MainFunction,
 {
     eframe::run_native(
-        "rustout",
+        app_name,
         options,
-        Box::new(|_cc| Ok(Box::new(Gui::new(main_function)))),
+        Box::new(|_cc| {
+            #[cfg(feature = "images")]
+            egui_extras::install_image_loaders(&_cc.egui_ctx);
+            Ok(Box::new(Gui::new(main_function)))
+        }),
     )
 }
 
 /// Fake run function for use in doctests
-pub fn __test_run<F>(_options: eframe::NativeOptions, _main_function: F) -> eframe::Result
+pub fn __test_run<F>(
+    _options: eframe::NativeOptions,
+    _app_name: &str,
+    _main_function: F,
+) -> eframe::Result
 where
     F: MainFunction,
 {
@@ -98,12 +106,15 @@ impl<F: MainFunction> eframe::App for Gui<F> {
 
                 let key_map = ctx.input(|i| i.keys_down.clone());
 
-                (self.main_function)(Context {
-                    dt,
-                    key_map,
-                    drawable_area: response.rect,
-                    painter,
-                });
+                (self.main_function)(
+                    Context {
+                        dt,
+                        key_map,
+                        drawable_area: response.rect,
+                        painter,
+                    },
+                    ui,
+                );
             });
 
         // update at 30 fps
