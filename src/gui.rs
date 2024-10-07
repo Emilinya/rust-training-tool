@@ -44,11 +44,11 @@ impl<F: MainFunction> Gui<F> {
 /// ### Example
 ///
 /// ```
-/// use eframe::egui;
 /// # let _ = "
 /// use rust_training_tool::gui::run;
 /// # ";
 /// # use rust_training_tool::gui::__test_run as run;
+/// use rust_training_tool::{eframe, egui};
 ///
 /// let options = eframe::NativeOptions {
 ///     viewport: egui::ViewportBuilder::default()

@@ -20,7 +20,7 @@ pub enum BounceDirection {
 ///
 /// ```
 /// use rust_training_tool::collision;
-/// use eframe::egui::{Pos2, Rect, Vec2};
+/// use rust_training_tool::egui::{Pos2, Rect, Vec2};
 /// let boundary = Rect::from_center_size(Pos2::ZERO, Vec2::new(10.0, 10.0));
 ///
 /// // boundary box is inside the boundary rect
@@ -61,7 +61,7 @@ pub fn collide_with_boundary(bounding_box: &Rect, boundary: &Rect) -> Option<Bou
 ///
 /// ```
 /// use rust_training_tool::collision;
-/// use eframe::egui::{Pos2, Rect, Vec2};
+/// use rust_training_tool::egui::{Pos2, Rect, Vec2};
 ///
 /// // I am moving up
 /// let self_direction = -Vec2::Y;
