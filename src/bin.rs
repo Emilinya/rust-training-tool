@@ -43,5 +43,5 @@ fn main() {
     gui::run(options, |ctx| {
         player.draw(&ctx);
     })
-    .unwrap();
+    .expect("Gui should open");
 }

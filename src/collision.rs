@@ -1,5 +1,8 @@
+//! Simple collision resolution logic.
+
 use eframe::egui::{Rect, Vec2};
 
+/// The direction in which an object colliding with something should bounce.
 #[derive(Debug, Eq, PartialEq, Hash)]
 pub enum BounceDirection {
     Up,
@@ -8,10 +11,29 @@ pub enum BounceDirection {
     Right,
 }
 
-/// Check collision between some moving object with a bounding box and the
+/// A function to check collision between some moving object with a bounding box and the
 /// edges of some boundary. If the boundary rectangle does not fully contain
 /// the bounding box, return the direction the object must bounce to stay within
 /// the boundary.
+///
+/// ### Example
+///
+/// ```
+/// use rust_training_tool::collision;
+/// use eframe::egui::{Pos2, Rect, Vec2};
+/// let boundary = Rect::from_center_size(Pos2::ZERO, Vec2::new(10.0, 10.0));
+///
+/// // boundary box is inside the boundary rect
+/// let mut bounding_box = Rect::from_center_size(Pos2::ZERO, Vec2::new(1.0, 1.0));
+/// assert!(collision::collide_with_boundary(&bounding_box, &boundary).is_none());
+///
+/// // move bounding box so it intersects the boundary on the right
+/// bounding_box.set_center(Pos2::new(9.1, 0.0));
+/// assert!(matches!(
+///     collision::collide_with_boundary(&bounding_box, &boundary),
+///     Some(collision::BounceDirection::Left)
+/// ));
+/// ```
 pub fn collide_with_boundary(bounding_box: &Rect, boundary: &Rect) -> Option<BounceDirection> {
     if !boundary.contains_rect(*bounding_box) {
         if bounding_box.left() < boundary.left() {
@@ -31,9 +53,47 @@ pub fn collide_with_boundary(bounding_box: &Rect, boundary: &Rect) -> Option<Bou
     }
 }
 
-/// Check collision between an object moving in `self_direction` with a bounding box
+/// A function to check collision between an object moving in `self_direction` with a bounding box
 /// `self_bounding_box`, and some other bounding box. If bounding boxes intersect,
 /// return the direction the moving object should bounce, otherwise, return None.
+///
+/// ### Example
+///
+/// ```
+/// use rust_training_tool::collision;
+/// use eframe::egui::{Pos2, Rect, Vec2};
+///
+/// // I am moving up
+/// let self_direction = -Vec2::Y;
+/// let self_bounding_box = Rect::from_center_size(Pos2::ZERO, Vec2::new(1.0, 1.0));
+/// let other_bounding_box = Rect::from_center_size(
+///     Pos2::new(1.0, 0.9),
+///     Vec2::new(1.0, 1.0),
+/// );
+/// assert!(matches!(
+///     collision::collide_with_rect(
+///         &self_direction,
+///         &self_bounding_box,
+///         &other_bounding_box
+///     ),
+///     Some(collision::BounceDirection::Down)
+/// ));
+///
+/// // I am moving right
+/// let self_direction = Vec2::X;
+/// let other_bounding_box = Rect::from_center_size(
+///     Pos2::new(0.9, 1.0),
+///     Vec2::new(1.0, 1.0),
+/// );
+/// assert!(matches!(
+///     collision::collide_with_rect(
+///         &self_direction,
+///         &self_bounding_box,
+///         &other_bounding_box
+///     ),
+///     Some(collision::BounceDirection::Left)
+/// ));
+/// ```
 pub fn collide_with_rect(
     self_direction: &Vec2,
     self_bounding_box: &Rect,
